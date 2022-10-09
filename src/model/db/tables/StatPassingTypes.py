@@ -40,7 +40,7 @@ class StatPassingTypes(base):
     season = Column(String(50), nullable = False)
 
     league_id = Column(String(50), nullable = False)
-    
+    fixture_id = Column(String(100))
     creation_date = Column(DateTime, default = datetime.now )
     last_update = Column(DateTime)
     

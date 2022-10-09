@@ -37,7 +37,7 @@ class StatKeeper(base):
     player = Column(String(50), nullable = False)
     
     season = Column(String(50), nullable = False)
-
+    fixture_id = Column(String(100))
     league_id = Column(String(50), nullable = False)
     
     creation_date = Column(DateTime, default = datetime.now )

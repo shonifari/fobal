@@ -22,10 +22,14 @@ from src.model.db.database import session
 RAW_FOLDER = '/Users/karis/dev/Python/fb_analysis/data/Serie A/2223/CSVs/Raw/Matches/'
 SEASON = 2223
 
-def stat_keeper():
+def stat_keeper(matchday = None):
 
     csvs = [RAW_FOLDER + x for x in os.listdir(RAW_FOLDER) if 'keeper' in x]
- 
+    
+    if matchday:
+        csvs = [x for x in csvs if f'{matchday})' in x]
+    
+    
     for csv in csvs:
 
         FILE_NAME = csv.split('/')[-1]
@@ -99,10 +103,13 @@ def stat_keeper():
 
 
 
-def stat_passing(update=False):
+def stat_passing(update=False, matchday = None):
 
     csvs = [RAW_FOLDER + x for x in os.listdir(RAW_FOLDER) if 'passing.csv' in x]
- 
+    if matchday:
+        csvs = [x for x in csvs if f'{matchday})' in x]
+    
+  
     not_fp = []
     wrong_team = []
     for csv in csvs:
@@ -212,10 +219,12 @@ def stat_passing(update=False):
     print(wrong_team)
 
 
-def stat_passing_types(update=False):
+def stat_passing_types(update=False, matchday = None):
 
     csvs = [RAW_FOLDER + x for x in os.listdir(RAW_FOLDER) if 'passing_types.csv' in x]
-    
+    if matchday:
+        csvs = [x for x in csvs if f'{matchday})' in x]
+
     not_fp = []
     wrong_team = []
     for csv in csvs:
@@ -341,10 +350,12 @@ def stat_passing_types(update=False):
     print(not_fp)
     print(wrong_team)
 
-def stat_defense(update=False):
+def stat_defense(update=False, matchday = None):
 
     csvs = [RAW_FOLDER + x for x in os.listdir(RAW_FOLDER) if 'defense.csv' in x]
-    
+    if matchday:
+        csvs = [x for x in csvs if f'{matchday})' in x]
+
     not_fp = []
     wrong_team = []
     for csv in csvs:
@@ -466,10 +477,12 @@ def stat_defense(update=False):
 
 
 
-def stat_possession(update=False):
+def stat_possession(update=False, matchday = None):
 
     csvs = [RAW_FOLDER + x for x in os.listdir(RAW_FOLDER) if 'possession.csv' in x]
-    
+    if matchday:
+        csvs = [x for x in csvs if f'{matchday})' in x]
+
     not_fp = []
     wrong_team = []
     for csv in csvs:
@@ -594,10 +607,12 @@ def stat_possession(update=False):
     print(wrong_team)
 
 
-def stat_performance(update=False):
+def stat_performance(update=False, matchday = None):
 
     csvs = [RAW_FOLDER + x for x in os.listdir(RAW_FOLDER) if 'summary.csv' in x]
-    
+    if matchday:
+        csvs = [x for x in csvs if f'{matchday})' in x]
+
     not_fp = []
     wrong_team = []
     for csv in csvs:
@@ -725,17 +740,36 @@ def stat_performance(update=False):
     print(wrong_team)
 
 
+def fix_player_fbref_id(team_name, player_name, fbref_id):
+    team : Teams = session.query(Teams).filter(Teams.name.like(team_name)).first()
+    if not team:
+        print(f'TEAM NOT FOUND: {team_name}')
+    
+    player : Players = session.query(Players).filter(Players.name == player_name).first()
+    if not player:
+        print(f'PALYER NOT FOUND: {player_name}')
+    if player.team_id != team.team_id:
+        print(f'TEAM ID AND PLAYER\'S TEAM ID ARE DIFFERENT')
+
+    player.fbref_id = fbref_id
+    print(player.name)
+    print(player.fbref_id)
+    input()
+    session.commit()
 
 
 if __name__ == '__main__':
-    #stat_keeper()
-    #stat_passing()
-    #stat_passing_types()
-    #stat_defense()
-    #stat_possession()
-    stat_performance()
+    matchday = 8
+    #stat_keeper(matchday=matchday)
+    #stat_passing(matchday=matchday)
+    #stat_passing_types(matchday=matchday)
+    #stat_defense(matchday=matchday)
+    #stat_possession(matchday=matchday)
+    #stat_performance(matchday=matchday)
     # found_tm : Teams = session.query(Teams).filter( func.lower(Teams.name).contains('ATA'.lower())).first()
     # print(found_tm.name)
+
+
 
  
 # Andrea Ranocchia
@@ -833,3 +867,37 @@ if __name__ == '__main__':
     # )
     # session.add(pl)
     # session.commit()
+   
+    #print(session.query(Teams).filter(Teams.name == 'US Salernitana 1919').first().team_id)
+    #
+    # input()
+    # pl = Players(
+    #     name='Julius Beck',
+    #     team_id='64c0bf5-e435-310a-abf0-2dfa6e1ebf78',
+    #     league_id='c8b561b1-9175-3808-a40b-78330d8e53f4',
+    #     nation='Denmark',
+    #     number='#16',
+    #     dob='Apr 27, 2005',
+    #     height='',
+    #     position='Central Midfield',
+    #     img='https://img.a.transfermarkt.technology/portrait/header/default.jpg?lm=1',
+    #     transfermarkt_id='julius-beck@802512',
+    #     diretta_id='segre-jacopo/fa6CHtxA/',
+    #     fbref_id='e892c325/Julius-Beck'
+    # )
+    # session.add(pl)
+    # session.commit()
+
+
+
+# [[Unnamed: 0    Matteo Lovato
+# Name: 12, dtype: object, 'SAL'], [Unnamed: 0    Julius Beck
+# Name: 10, dtype: object, 'SPE'], [Unnamed: 0    Kelvin Amian
+# Name: 15, dtype: object, 'SPE'], [Unnamed: 0    Giulio Donati
+# Name: 11, dtype: object, 'MON']]
+# []
+
+    # fix_player_fbref_id('Spezia Calcio', 'Kelvin Amian','bcc81786/Kelvin-Amian')
+    
+    # fix_player_fbref_id('US Salernitana 1919', 'Matteo Lovato','5fa57166/Matteo-Lovato')
+    # fix_player_fbref_id('AC Monza', 'Giulio Donati','22051fbe/Giulio-Donati')

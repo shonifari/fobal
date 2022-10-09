@@ -1,3 +1,4 @@
+from unidecode import unidecode
 from datetime import datetime
 from pathlib import Path
 import sys 
@@ -83,7 +84,9 @@ class Players(base):
         with open(path,'wb') as f:
             f.write(content)
         return '/res/image/data/leagues/' + f'{self.player_id}.png'
-        
+    
+    def decoded_name(self) -> str:
+        return unidecode(self.name)
 # from sqlalchemy import create_engine
 # from sqlalchemy.ext.declarative import declarative_base
  

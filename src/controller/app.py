@@ -1,7 +1,10 @@
-from cmath import rect
+from PIL import Image
 import pandas as pd
 from sqlalchemy import create_engine
-import plotly.graph_objects as go  
+import plotly.graph_objects as go
+
+
+
 
 def main(): 
 	DB_NAME = '/Users/karis/dev/Python/fobal/fobal.db'  
@@ -242,7 +245,7 @@ def main8():
 	img_height = 181
 	scale_factor = 1
 	adj_logo = 0.2
-	from PIL import Image
+	
 	for i,row in df.iterrows(): 
 		fig.add_layout_image(
 			dict(
@@ -348,5 +351,122 @@ def main8():
 		font_size=24)
 	fig.show()
 
+
+
+
+def main9():
+	import numpy as np
+
+
+	DB_NAME = '/Users/karis/dev/Python/fobal/fobal.db'  
+	engine = create_engine(f'sqlite:///{DB_NAME}', echo=True)
+
+	conn = engine.connect()
+	 
+	query = f'''
+	SELECT * FROM stat_possession
+	'''
+	df = pd.read_sql(query, con=conn)
+	print(df)
+
+	df = df.groupby(['fixture_id','team'], as_index = False).sum()
+
+	print(df)
+	 
+	ids = set(df['fixture_id'].values)
+	print(ids)
+	for fix_id in ids:
+		df = df.loc[(df['fixture_id'] == fix_id)]
+		break
+	
+	
+	print(df)
+	 
+	df.index = [0,1]
+
+	labels = ["DEF","MID","ATT"]
+	widths = np.array([27,46,27])
+	
+	DEF_TOT = df.loc[0,'touch_DEF_PA'] + df.loc[0,'touch_DEF'] + df.loc[1,'touch_DEF_PA'] + df.loc[1,'touch_DEF']
+	MID_TOT = df.loc[0,'touch_MID'] + df.loc[1,'touch_MID']
+	ATT_TOT = df.loc[0,'touch_ATT'] + df.loc[0,'touch_ATT_PA'] +	df.loc[1,'touch_ATT'] + df.loc[1,'touch_ATT_PA']
+
+	HOME_DEF_PERC =  round((df.loc[0,'touch_DEF_PA'] + df.loc[0,'touch_DEF']) * 100 / DEF_TOT , 2)
+	HOME_MID_PERC =  round((df.loc[0,'touch_MID']) * 100 / MID_TOT , 2)
+	HOME_ATT_PERC =  round((df.loc[0,'touch_ATT_PA'] + df.loc[0,'touch_ATT']) * 100 / ATT_TOT , 2)
+
+	AWAY_DEF_PERC =  round((df.loc[1,'touch_DEF_PA'] + df.loc[1,'touch_DEF']) * 100 / DEF_TOT , 2)
+	AWAY_MID_PERC =  round((df.loc[1,'touch_MID']) * 100 / MID_TOT , 2)
+	AWAY_ATT_PERC =  round((df.loc[1,'touch_ATT_PA'] + df.loc[1,'touch_ATT']) * 100 / ATT_TOT , 2)
+
+	 
+
+	data = {
+		df.loc[0,'team']: [HOME_DEF_PERC, HOME_MID_PERC, HOME_ATT_PERC],
+		df.loc[1,'team']: [AWAY_DEF_PERC, AWAY_MID_PERC, AWAY_ATT_PERC]
+		
+	}
+	
+
+	fig = go.Figure()
+	for key in data:
+		fig.add_trace(go.Bar(
+			name=key,
+			y=data[key],
+			x=np.cumsum(widths)-widths,
+			width=widths,
+			offset=0,
+			opacity=1,
+			customdata=np.transpose([labels, widths*data[key]]),
+			texttemplate="%{y}",
+			textposition="inside",
+			textangle=0,
+			textfont_color="white",
+			hovertemplate="<br>".join([
+				"label: %{customdata[0]}",
+				"width: %{width}",
+				"height: %{y}",
+				"area: %{customdata[1]}",
+			])
+		))
+
+	fig.update_xaxes(
+		tickvals=np.cumsum(widths)-widths/2,
+		ticktext= ["%s<br>%d" % (l, w) for l, w in zip(labels, widths)]
+	)
+
+	fig.update_xaxes(range=[0,100])
+	fig.update_yaxes(range=[0,100])
+
+	fig.update_layout(
+		title_text="Marimekko Chart",
+		barmode="stack",
+		uniformtext=dict(mode="hide", minsize=10),
+	)
+
+ 
+	fig.add_layout_image(
+			dict(
+        x=0,
+        y=100,
+        sizex=100, 
+        sizey=100,
+        xref="x",
+        yref="y",
+        opacity=1.0,
+        layer="above",
+		sizing="stretch",
+        source=Image.open(f"/Users/karis/dev/Python/fb_analysis/rsrc/Posts/Resources/Field.png")
+		)
+				
+		)
+
+	fig.update_layout(
+		#font_color= 'white',
+		font_size=24)
+	fig.show()
+
+
+
 if __name__ =="__main__":
-	main8()
+	main9()
