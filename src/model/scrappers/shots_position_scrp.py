@@ -2,11 +2,8 @@
 import datetime
 from unidecode import unidecode
 import json
-import plotly.graph_objects as go
 from pathlib import Path
-import sys
-from turtle import ht, position
-from PIL import Image
+import sys 
 
 # ADD THE SRC FOLDER TO THE SYS PATH
 APP_FOLDER = str(Path(Path(Path(Path(__file__).parent.absolute()).parent.absolute()).parent.absolute()).parent.absolute())
@@ -75,7 +72,7 @@ class ScrapShotsPositions(DirettaScrapper):
             print( a_team_fetched_name, '->', a_team.name)
 
             # FETCH FIXTURE
-            fixture : Fixtures = session.query(Fixtures).filter(Fixtures.home_id == h_team.team_id and Fixtures.away_id == a_team.team_id and Fixtures.matchday == matchday).first()
+            fixture : Fixtures = session.query(Fixtures).filter(Fixtures.home_id == h_team.team_id , Fixtures.away_id == a_team.team_id , Fixtures.matchday == matchday).first()
             if not fixture:
                 print('FIXTURE')
                 input('______')
@@ -180,62 +177,10 @@ class ScrapShotsPositions(DirettaScrapper):
 
 
 
-    def mutate_axis(self,value, axis_x = True) -> float:
-        if axis_x : return value * 135
-        else: return value * 95
-
-
         
 
 
-    def plot(self, xs,ys,pls):
-        fig = go.Figure()
- 
-        fig.add_trace(
-            go.Scatter(x=[ self.mutate_axis(x) for x in xs],
-               y=[self.mutate_axis(y) for y in ys],
-                        mode='markers',
-                        text=pls,
-                        marker=dict(size=15,
-                        color='red'),
-                    name='Salah'
-        ))
-
-        #axis hide、yaxis reversed
-        fig.update_layout(
-            autosize=False,
-            width=1163,
-            height=783,
-            xaxis=dict(visible=True,autorange=False),
-            yaxis=dict(visible=True,autorange=False)
-        )
-        fig.update_traces(textposition='top center')
-        
-        # Set templates
-        #fig.update_layout(template="plotly_white")
-        
-        fig.update_xaxes(range=[0,135])
-        fig.update_yaxes(range=[95,0])    
-
-        fig.add_layout_image(
-            dict(
-            x=0,
-            y=0,
-            sizex=135, 
-            sizey=95,
-            xref="x",
-            yref="y",
-            opacity=1.0,
-            layer="below",
-            sizing="stretch",
-            source=Image.open(f"/Users/karis/dev/Python/fb_analysis/rsrc/Posts/Resources/Field.png")
-            )
-                    
-            )
-
-      
-        fig.show()
-
+  
                     
 
 
@@ -437,13 +382,11 @@ def fix_specific_player_names(name) -> str:
 
 def main():
     sc = ScrapShotsPositions()
-    # sc.plot([0.5,0.4,0.6],[0.3,0.6,0.6],['a','a','b'])
+     
     for i in range(1,9):
         sc.scrap(i) 
 
 if __name__ == '__main__':
     main() 
-    # ids = get_match_id(8)
-    # for id in ids:
-    #     print(f'https://understat.com/match/{id}')
+     
      
