@@ -266,8 +266,10 @@ class PlayersScrapper():
 
 
   
-class ScrapPlayers(DirettaScrapper):
-
+class DirettaScrapPlayers(DirettaScrapper):
+    '''
+    Scraps player info from diretta.it
+    '''
     
        
     def __init__(self, league_name) -> None:
