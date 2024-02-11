@@ -67,7 +67,7 @@ from src.model.db.tables.Fixtures import Fixtures
 
 fixtures : List[Fixtures] = session.query(Fixtures).filter(Fixtures.matchday < 9).all()
 
-
+d
 
 for fix  in fixtures:
     stats = session.query(StatKeeper).filter(StatKeeper.match_day == fix.matchday).all()
