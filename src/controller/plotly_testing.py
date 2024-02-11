@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 
 
 
-def main(): 
+def shot_accuracy(): 
 	DB_NAME = '/Users/karis/dev/Python/fobal/fobal.db'  
 	engine = create_engine(f'sqlite:///{DB_NAME}', echo=True)
 
@@ -24,15 +24,15 @@ def main():
 
 	for i,row in df.iterrows():
 		print(f'''{df.loc[i,'match_day']}) 
-SH_A: {df.loc[i,'SH_A']}
-SoT: {df.loc[i,'Sot']}
-Accurcy:{round(df.loc[i,'Sot'] * 100 / df.loc[i,'SH_A'], 2)}%
+		SH_A: {df.loc[i,'SH_A']}
+		SoT: {df.loc[i,'Sot']}
+		Accurcy:{round(df.loc[i,'Sot'] * 100 / df.loc[i,'SH_A'], 2)}%
 			''')
 
 	print(f'''TOTALE
-SH_A: {df.sum()['SH_A']}
-SoT: {df.sum()['Sot']}
-Accurcy:{round(df.sum()['Sot'] * 100 / df.sum()['SH_A'], 2)}%
+	SH_A: {df.sum()['SH_A']}
+	SoT: {df.sum()['Sot']}
+	Accuracy:{round(df.sum()['Sot'] * 100 / df.sum()['SH_A'], 2)}%
 			''')
 	sot =  df.sum()['Sot']
 	sh_off = df.sum()['SH_A'] - sot
@@ -40,7 +40,7 @@ Accurcy:{round(df.sum()['Sot'] * 100 / df.sum()['SH_A'], 2)}%
 	fig.show()
 
 
-def main2(): 
+def goals(): 
 	DB_NAME = '/Users/karis/dev/Python/fobal/fobal.db'  
 	engine = create_engine(f'sqlite:///{DB_NAME}', echo=True)
 
@@ -69,7 +69,7 @@ def main2():
 	# fig = go.Figure(go.Bar(x=assist_man['player'], y=assist_man['ast'], name='Montreal'))
 	# fig.show()
 	
-def main3(): 
+def passes(): 
 	DB_NAME = '/Users/karis/dev/Python/fobal/fobal.db'  
 	engine = create_engine(f'sqlite:///{DB_NAME}', echo=True)
 
@@ -94,7 +94,7 @@ def main3():
     #                                mode='markers', size=df['pass_A'])])
 	fig.show()
 	 
-def main4(): 
+def goal_shots_attempts(): 
 	DB_NAME = '/Users/karis/dev/Python/fobal/fobal.db'  
 	engine = create_engine(f'sqlite:///{DB_NAME}', echo=True)
 
@@ -116,7 +116,7 @@ def main4():
     #                                mode='markers', size=df['pass_A'])])
 	fig.show()
 	 
-def main5(): 
+def ball_reception(): 
 	DB_NAME = '/Users/karis/dev/Python/fobal/fobal.db'  
 	engine = create_engine(f'sqlite:///{DB_NAME}', echo=True)
 
@@ -147,7 +147,7 @@ def main5():
 	 
  
 	 
-def main6(): 
+def ball_control(): 
 	DB_NAME = '/Users/karis/dev/Python/fobal/fobal.db'  
 	engine = create_engine(f'sqlite:///{DB_NAME}', echo=True)
 
@@ -176,40 +176,9 @@ def main6():
 	
 	fig.show()
 	 
-def main7(): 
-	DB_NAME = '/Users/karis/dev/Python/fobal/fobal.db'  
-	engine = create_engine(f'sqlite:///{DB_NAME}', echo=True)
 
-	conn = engine.connect()
 	 
-	team = 'Roma'
-	query = f'''
-	SELECT * FROM stat_performance WHERE team_id IN 
-   	(SELECT team_id FROM teams WHERE name LIKE '%{team}%')
-	'''
-	df = pd.read_sql(query, con=conn)
-	print(df)
-
-	df = df.groupby(['match_day'], as_index = False).sum()
-	print(df)
-
-	return
-	#pls_df = pls_df[~pls_df['pos'].astype(str).isin(['CB','LB', 'RB']) ]
-
-	def percs(df):
-		return round(100 * df['ctrl_prog_dist'] / df['ctrl_tot_dist'], 2)
-
-	pls_df = pls_df.assign(perc=lambda x: percs(x))
-	pls_df = pls_df.sort_values(by='ctrl_tot_dist', ascending=False).head(10)
-	pls_df = pls_df.sort_values(by='perc', ascending=False)
-
-	print(pls_df.loc[:, ['player','team','pos', 'ctrl_tot_dist', 'ctrl_prog_dist', 'perc']])
-	import plotly.express as px
-	fig = px.scatter(pls_df, x="ctrl_tot_dist", y="ctrl_prog_dist", color='pos' ,size='perc', text='player',  )
-	
-	fig.show()
-	 
-def main8(): 
+def pass_types(): 
 	DB_NAME = '/Users/karis/dev/Python/fobal/fobal.db'  
 	engine = create_engine(f'sqlite:///{DB_NAME}', echo=True)
 
@@ -354,7 +323,7 @@ def main8():
 
 
 
-def main9():
+def field_section_played():
 	import numpy as np
 
 
@@ -469,4 +438,4 @@ def main9():
 
 
 if __name__ =="__main__":
-	main9()
+	field_section_played()
